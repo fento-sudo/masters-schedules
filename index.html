@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W45s Tournament Schedule — Week 35</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface2: #f0f1f4;
+  --border: #e2e4ea;
+  --text: #1a1d27;
+  --text-dim: #5c6070;
+  --text-muted: #8b90a0;
+  --accent: #3b7ddd;
+
+  --game: #d44425;
+  --game-bg: rgba(212,68,37,0.06);
+  --game-border: rgba(212,68,37,0.2);
+
+  --meal: #1a8f5c;
+  --meal-bg: rgba(26,143,92,0.06);
+  --meal-border: rgba(26,143,92,0.2);
+
+  --travel: #2d6bc4;
+  --travel-bg: rgba(45,107,196,0.06);
+  --travel-border: rgba(45,107,196,0.2);
+
+  --team: #7c4dbd;
+  --team-bg: rgba(124,77,189,0.06);
+  --team-border: rgba(124,77,189,0.2);
+
+  --recovery: #c47d14;
+  --recovery-bg: rgba(196,125,20,0.06);
+  --recovery-border: rgba(196,125,20,0.2);
+
+  --postgame: #2a9d8f;
+  --postgame-bg: rgba(42,157,143,0.06);
+  --postgame-border: rgba(42,157,143,0.2);
+
+  --rest: #8b90a0;
+  --rest-bg: rgba(139,144,160,0.06);
+  --rest-border: rgba(139,144,160,0.18);
+
+  --tba: #8b90a0;
+  --tba-bg: rgba(139,144,160,0.06);
+  --tba-border: rgba(139,144,160,0.18);
+
+  --social: #c4387a;
+  --social-bg: rgba(196,56,122,0.06);
+  --social-border: rgba(196,56,122,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+header {
+  margin-bottom: 2.5rem;
+}
+
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.25rem;
+}
+
+header .subtitle {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.toggle {
+  display: flex;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+
+.toggle button {
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle button.active {
+  background: var(--surface2);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.legend {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.edit-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-hint span { color: var(--accent); }
+
+/* ========== DAY VIEW ========== */
+.day-view { display: none; }
+.day-view.active { display: block; }
+
+.day-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.day-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.day-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.day-date {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.day-game-badge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: var(--game-bg);
+  color: var(--game);
+  border: 1px solid var(--game-border);
+}
+
+.day-rest-badge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: var(--rest-bg);
+  color: var(--rest);
+  border: 1px solid var(--rest-border);
+}
+
+.timeline {
+  padding: 0.75rem 1.25rem 1rem;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.55rem 0;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 29px;
+  top: 2rem;
+  bottom: -0.1rem;
+  width: 1px;
+  background: var(--border);
+}
+
+.ti-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  min-width: 48px;
+  padding-top: 0.15rem;
+  text-align: right;
+}
+
+.ti-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 0.35rem;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.ti-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ti-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.ti-detail {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 0.1rem;
+}
+
+/* Game items get a card treatment */
+.timeline-item.cat-game .ti-content {
+  background: var(--game-bg);
+  border: 1px solid var(--game-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  margin: -0.15rem 0;
+}
+
+.timeline-item.cat-game .ti-label {
+  color: var(--game);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+/* Post Game items get a subtle card treatment */
+.timeline-item.cat-postgame .ti-content {
+  background: var(--postgame-bg);
+  border: 1px solid var(--postgame-border);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  margin: -0.1rem 0;
+}
+
+.grid-item.cat-postgame {
+  background: var(--postgame-bg);
+  border: 1px solid var(--postgame-border);
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+}
+
+/* Rest day message */
+.rest-day-msg {
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.tba-msg {
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* ========== WEEK GRID VIEW ========== */
+.week-view { display: none; }
+.week-view.active { display: block; }
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.grid-day {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.grid-day-header {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 0.82rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grid-day-header .gd-date {
+  color: var(--text-dim);
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.grid-items {
+  padding: 0.5rem;
+}
+
+.grid-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  font-size: 0.73rem;
+  line-height: 1.35;
+  transition: background 0.15s;
+}
+
+.grid-item:hover {
+  background: var(--surface2);
+}
+
+.gi-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  min-width: 36px;
+  padding-top: 1px;
+}
+
+.gi-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.gi-label {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+}
+
+.grid-item.cat-game {
+  background: var(--game-bg);
+  border: 1px solid var(--game-border);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+}
+
+.grid-item.cat-game .gi-label {
+  color: var(--game);
+  font-weight: 700;
+}
+
+.grid-rest {
+  padding: 2rem 0.85rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.grid-tba {
+  padding: 2rem 0.85rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+.print-btn {
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+}
+
+.print-btn:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--text-dim);
+}
+
+/* Print */
+@media print {
+  body { background: #fff; color: #1a1a1a; }
+  .controls, .edit-hint { display: none !important; }
+  header { margin-bottom: 1rem; }
+  header h1 { font-size: 1.3rem; }
+  .container { padding: 0.5rem; max-width: 100%; }
+  .day-card { break-inside: avoid; border-color: #ddd; background: #fff; margin-bottom: 0.75rem; box-shadow: none; }
+  .grid-day { break-inside: avoid; border-color: #ddd; background: #fff; }
+  .timeline-item.cat-game .ti-content { background: #fef2ef; border-color: #f0c4b8; }
+  .timeline-item.cat-postgame .ti-content { background: #eef8f6; border-color: #b8e0da; }
+  .day-card, .grid-day { page-break-inside: avoid; }
+  .week-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 1rem; }
+  .legend { display: none; }
+  .week-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  ✏️  EDIT YOUR SCHEDULE BELOW                                   ║
+║                                                                  ║
+║  Format:  ## Day Name | Date                                     ║
+║           - HH:MM | Activity description                         ║
+║           - HH:MM | Activity description (detail in brackets)    ║
+║           - REST DAY                                             ║
+║           - TBA | Reason or note                                 ║
+║                                                                  ║
+║  Auto-colour keywords:                                           ║
+║    game, warm up,           breakfast, lunch, dinner,            ║
+║    training        → red    snack, food, eat      → green       ║
+║    stretch, debrief → orange (post game)                        ║
+║    travel, depart   → blue                                      ║
+║    team talk, team walk,         recovery, own time,            ║
+║    leadership, layer talks,      quiet time,                    ║
+║    team meeting, korero → purple rest day          → amber      ║
+║    social, function → pink                                      ║
+║                                                                  ║
+║  Just save this file and refresh your browser!                   ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
+
+<script id="schedule-data" type="text/plain">
+## Saturday | 21 Feb
+- 10:00 | Travel to Auckland (Further details around pick ups etc to be provided as needed). Make sure you bring snacks and breakfast supplies.
+- 15:00 | All arrived and checked into accommodation
+- 16:30 | Travel to Turf
+- 17:00 | Warm up
+- 17:30 | Light turf training (Turf tbc)
+- 18:30 | Stretch 
+- 18:45 | Travel to accommodation
+- 19:30 | Team Dinner - will include update from managers meeting
+- 21:30 | Quiet time in rooms
+
+## Sunday | 22 Feb
+- 06:00 | Breakfast / own time
+- 12:00 | Team Activity
+- 13:00 | Lunch
+- 13:30 | Leadership Meeting
+- 14:00 | Layer Talks
+- 15:30 | Light snacks available
+- 17:30 | Travel to turf
+- 18:00 | Team Talk
+- 18:30 | Warm up
+- 19:10 | GAME vs Waikato (Tiger 2)
+- 21:00 | Stretch / Food / Debrief
+- 21:30 | Recovery at turf
+- 21:45 | Travel to accommodation
+- 22:30 | Dinner
+- 23:15 | Quiet time in rooms
+
+
+## Monday | 23 Feb
+- TBA | REST DAY - Have scheduled layer talks in the morning to allow for hockey watching in the mid-morning / afternoon
+- 09:30 | Leadership Meeting
+- 10:00 | Layer Talks
+- 19:30 | Back in accommodation
+- 21:30 | Quiet time in rooms
+
+## Tuesday | 24 Feb
+- 06:00 | Breakfast 
+- 07:00 | Team Walk
+- 08:00 | Travel to turf
+- 08:30 | Team Talk
+- 09:00 | Warm up
+- 09:35 | GAME vs Auckland (Cello 1)
+- 11:30 | Stretch / Food / Debrief
+- 12:00 | Travel to accommodation
+- 12:30 | Recovery at AUT
+- 13:00 | Lunch
+- 13:30 | Own time
+- 18:00 | Wellington Masters Teams Dinner
+- 21:30 | Quiet time in rooms
+
+## Wednesday | 25 Feb
+- 06:00 | Breakfast / own time
+- 10:00 | Team walk & Stretch
+- 12:00 | Lunch
+- 13:30 | Leadership Meeting
+- 14:00 | Layer Talks
+- 15:00 | Own time
+- 17:10 | Travel to turf
+- 17:40 | Team Talk
+- 18:10 | Warm up
+- 18:40 | GAME vs Tasman Districts (Tiger 2)
+- 20:30 | Stretch / Food / Debrief
+- 21:30 | Quiet time in rooms
+
+## Thursday | 26 Feb
+- TBA | REST DAY
+- 18:00 | Team Dinner
+- 21:30 | Quiet time in rooms
+
+## Friday | 27 Feb
+- TBA | Cross Overs - schedule to be confirmed
+
+## Saturday | 28 Feb
+- TBA | Final Placing Games - schedule to be confirmed
+- 18:00 | Team Dinner
+- 18:30 | Tourney Social Function
+
+## Sunday | 1 Mar
+- 08:00 | Depart Auckland (Logistics for airport travel, van return etc TBC)
+</script>
+
+<div class="container">
+  <header>
+    <h1>W45s Tournament Schedule</h1>
+    <div class="subtitle">Week 35 — 21 Feb to 1 Mar 2026, Auckland</div>
+  </header>
+
+  <div class="edit-hint">
+    <span>✏️</span> To update: open this file in any text editor, edit the schedule text near the top, save, and refresh.
+  </div>
+
+  <div class="controls">
+    <div class="toggle">
+      <button id="btn-day" class="active" onclick="setView('day')">Day by Day</button>
+      <button id="btn-week" onclick="setView('week')">Week at a Glance</button>
+    </div>
+    <button class="print-btn" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print / Save PDF
+    </button>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div id="day-view" class="day-view active"></div>
+  <div id="week-view" class="week-view"></div>
+</div>
+
+<script>
+const CATEGORIES = [
+  { id: 'game',     label: 'Game',     color: '#d44425', keywords: ['game', 'warm up', 'warmup', 'training'] },
+  { id: 'postgame', label: 'Post Game', color: '#2a9d8f', keywords: ['stretch', 'debrief', 'food / debrief'] },
+  { id: 'travel',   label: 'Travel',   color: '#2d6bc4', keywords: ['travel', 'depart', 'check in', 'check into', 'airport'] },
+  { id: 'social',   label: 'Social',   color: '#c4387a', keywords: ['social', 'function', 'masters teams dinner'] },
+  { id: 'meal',     label: 'Meal',     color: '#1a8f5c', keywords: ['breakfast', 'lunch', 'dinner', 'snack', 'food', 'eat', 'supermarket'] },
+  { id: 'team',     label: 'Team',     color: '#7c4dbd', keywords: ['team talk', 'team walk', 'team meeting', 'team activity', 'leadership', 'layer korero', 'layer talks', 'korero', 'powhiri'] },
+  { id: 'recovery', label: 'Recovery', color: '#c47d14', keywords: ['recovery', 'own time', 'quiet time', 'rest day'] },
+  { id: 'tba',      label: 'TBA',      color: '#8b90a0', keywords: ['tba', 'to be advised', 'to be confirmed'] },
+];
+
+function categorize(text) {
+  const lower = text.toLowerCase();
+  // Game is highest priority
+  if (/\bgame\b/i.test(text)) return 'game';
+  // Check warm up only if it's the main activity (not part of a game line)
+  for (const cat of CATEGORIES) {
+    for (const kw of cat.keywords) {
+      if (lower.includes(kw)) return cat.id;
+    }
+  }
+  return 'default';
+}
+
+function getCatColor(catId) {
+  const cat = CATEGORIES.find(c => c.id === catId);
+  return cat ? cat.color : '#5a6180';
+}
+
+function parseSchedule(raw) {
+  const days = [];
+  let current = null;
+  for (let line of raw.split('\n')) {
+    line = line.trim();
+    if (!line) continue;
+    if (line.startsWith('## ')) {
+      const parts = line.slice(3).split('|').map(s => s.trim());
+      current = { name: parts[0], date: parts[1] || '', items: [], isRest: false, isTba: false };
+      days.push(current);
+    } else if (line.startsWith('- ') && current) {
+      const content = line.slice(2).trim();
+      if (content.toUpperCase() === 'REST DAY') {
+        current.isRest = true;
+      } else if (content.startsWith('TBA')) {
+        current.isTba = true;
+        const note = content.replace(/^TBA\s*\|?\s*/, '');
+        if (note) current.tbaNote = note;
+      } else {
+        const pipeIdx = content.indexOf('|');
+        if (pipeIdx > -1) {
+          const time = content.slice(0, pipeIdx).trim();
+          const label = content.slice(pipeIdx + 1).trim();
+          const detail = '';
+          const cat = categorize(label);
+          current.items.push({ time, label, detail, cat });
+        }
+      }
+    }
+  }
+  return days;
+}
+
+function hasGame(day) {
+  return day.items.some(i => i.cat === 'game' && /game/i.test(i.label));
+}
+
+function renderDayView(days) {
+  const container = document.getElementById('day-view');
+  container.innerHTML = '';
+  for (const day of days) {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+
+    let badge = '';
+    if (day.isRest) badge = '<span class="day-rest-badge">Rest Day</span>';
+    else if (hasGame(day)) {
+      const gameItem = day.items.find(i => i.cat === 'game' && /game/i.test(i.label));
+      badge = `<span class="day-game-badge">Game Day</span>`;
+    }
+
+    card.innerHTML = `<div class="day-header">
+      <span class="day-name">${day.name}</span>
+      <span class="day-date">${day.date}</span>
+      ${badge}
+    </div>`;
+
+    if (day.isRest) {
+      card.innerHTML += `<div class="rest-day-msg">Rest & Recovery — no scheduled team commitments</div>`;
+    } else if (day.isTba && day.items.length === 0) {
+      card.innerHTML += `<div class="tba-msg">${day.tbaNote || 'Schedule to be confirmed'}</div>`;
+    } else {
+      const tl = document.createElement('div');
+      tl.className = 'timeline';
+
+      if (day.isTba && day.tbaNote) {
+        const tbaEl = document.createElement('div');
+        tbaEl.className = 'tba-msg';
+        tbaEl.style.padding = '1rem 0 0.5rem';
+        tbaEl.textContent = day.tbaNote;
+        tl.appendChild(tbaEl);
+      }
+
+      for (const item of day.items) {
+        const color = getCatColor(item.cat);
+        const el = document.createElement('div');
+        el.className = `timeline-item cat-${item.cat}`;
+        el.innerHTML = `
+          <span class="ti-time">${item.time}</span>
+          <span class="ti-dot" style="background:${color}"></span>
+          <div class="ti-content">
+            <div class="ti-label">${item.label}</div>
+            ${item.detail ? `<div class="ti-detail">${item.detail}</div>` : ''}
+          </div>`;
+        tl.appendChild(el);
+      }
+      card.appendChild(tl);
+    }
+    container.appendChild(card);
+  }
+}
+
+function renderWeekView(days) {
+  const container = document.getElementById('week-view');
+  container.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'week-grid';
+
+  for (const day of days) {
+    const col = document.createElement('div');
+    col.className = 'grid-day';
+
+    col.innerHTML = `<div class="grid-day-header">
+      <span>${day.name}</span>
+      <span class="gd-date">${day.date}</span>
+    </div>`;
+
+    if (day.isRest) {
+      col.innerHTML += `<div class="grid-rest">Rest Day</div>`;
+    } else if (day.isTba && day.items.length === 0) {
+      col.innerHTML += `<div class="grid-tba">${day.tbaNote || 'TBA'}</div>`;
+    } else {
+      const items = document.createElement('div');
+      items.className = 'grid-items';
+
+      if (day.isTba && day.tbaNote) {
+        const tbaEl = document.createElement('div');
+        tbaEl.className = 'grid-tba';
+        tbaEl.style.padding = '0.5rem 0';
+        tbaEl.textContent = day.tbaNote;
+        items.appendChild(tbaEl);
+      }
+
+      for (const item of day.items) {
+        const color = getCatColor(item.cat);
+        const el = document.createElement('div');
+        el.className = `grid-item cat-${item.cat}`;
+        el.innerHTML = `
+          <span class="gi-time">${item.time}</span>
+          <span class="gi-dot" style="background:${color}"></span>
+          <span class="gi-label">${item.label}</span>`;
+        items.appendChild(el);
+      }
+      col.appendChild(items);
+    }
+    grid.appendChild(col);
+  }
+  container.appendChild(grid);
+}
+
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = CATEGORIES.filter(c => c.id !== 'tba').map(c =>
+    `<span class="legend-item"><span class="legend-dot" style="background:${c.color}"></span>${c.label}</span>`
+  ).join('');
+}
+
+function setView(view) {
+  document.getElementById('day-view').classList.toggle('active', view === 'day');
+  document.getElementById('week-view').classList.toggle('active', view === 'week');
+  document.getElementById('btn-day').classList.toggle('active', view === 'day');
+  document.getElementById('btn-week').classList.toggle('active', view === 'week');
+}
+
+function init() {
+  const raw = document.getElementById('schedule-data').textContent;
+  const days = parseSchedule(raw);
+  renderDayView(days);
+  renderWeekView(days);
+  renderLegend();
+}
+
+init();
+</script>
+</body>
+</html>
